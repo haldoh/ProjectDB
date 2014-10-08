@@ -1,0 +1,14 @@
+--Controlla se il giocatore creato è il primo e gli assegna il turno
+create or replace function newplayer() returns trigger as $$
+	declare
+		curs cursor for select * from giocatore;
+		trow giocatore%rowtype;
+	begin
+		open curs;
+		fetch curs into trow;
+		if not found then update giocatore set turno='t'; end if;
+		return new;
+	end;
+$$ language plpgsql;
+
+create trigger tnewplayer after insert on giocatore for each row execute procedure newplayer();

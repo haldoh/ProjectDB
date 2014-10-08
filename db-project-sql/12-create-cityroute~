@@ -1,0 +1,19 @@
+create table cityroute (
+partenza	varchar(40),
+arrivo		varchar(40), 
+passada		varchar(40),
+hop		integer default 0,
+primary key (partenza, arrivo),
+foreign key (partenza) references citta(nomec) on update cascade on delete cascade,
+foreign key (arrivo) references citta(nomec) on update cascade on delete cascade,
+foreign key (passada) references citta(nomec) on update cascade on delete cascade
+);
+
+create table temproute (
+nodo	varchar(40)primary key,
+passada	varchar(40),
+hop	integer default -1,
+final	boolean default 'f',
+foreign key (nodo) references citta(nomec) on update cascade on delete cascade,
+foreign key (passada) references citta(nomec) on update cascade on delete cascade
+);

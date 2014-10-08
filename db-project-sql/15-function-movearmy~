@@ -1,0 +1,55 @@
+--Sposta un esercito nella città in input. Se l'arrivo è presidiato, calcola le sorti della battaglia.
+Create or replace function movearmy(army varchar(40), city varchar(40)) returns integer as $$
+	declare
+		--Cario i dati dell'attaccante		
+		curs1 cursor for select * from esercito where nomeesercito=army;
+		attk esercito%rowtype;
+		curs2 cursor for select * from citta where nomec=city;
+		cit citta%rowtype;
+		counter record;
+		defs esercito%rowtype;
+		result integer;
+		va float;
+		vd float;
+	begin
+		result := NULL;
+		open curs1;
+		fetch curs1 into attk;
+		if attk.mosso='t' then return result; end if;
+		open curs2;
+		fetch curs2 into cit;
+		defs.vd := 0;
+		--LOOP1 - Cerca l'esercito difensore più forte
+		for counter in select * from esercito where citta = city loop
+			if counter.vd > defs.vd then defs := counter; end if;
+		end loop;--LOOP1END
+		--IF1 - Se non c'è un esercito nemico sposta, altrimenti si combatte
+		if defs.nomeesercito is null then update esercito set citta = city, mosso='t' where nomeesercito = army;
+		else
+			--Calcolo il risultato del combattimento
+			va := cast(attk.va * (random()/3)+0.65 as int);
+			vd := cast(defs.vd * (random()/3)+0.65 as int);
+			result := va-vd;
+			--IF2 - verifico chi ha vinto e agisco di conseguenza			
+			if result > 0 then
+				--IF3 - Riduco la numerosità dell'esercito sconfitto. Se raggiunge zero, l'esercito è distrutto.
+				if (defs.numeros-result) <= 0 then delete from esercito where nomeesercito=defs.nomeesercito;
+				else update esercito set numeros = numeros-result where nomeesercito=defs.nomeesercito; end if;--IF3END
+				--Riduco gli abitanti della città e sottraggo i PI
+				update nazione set pi=pi+cit.vi where nomen=attk.nazione;
+				update citta set vi=0, ab=ab-result where nomec=city;
+				--Aggiorno il num. di vittorie degli eserciti
+				update esercito set vittorie=vittorie+1, mosso='t' where nomeesercito=attk.nomeesercito;
+				update esercito set vittorie=vittorie-1 where nomeesercito=defs.nomeesercito;
+			else
+				--IF4 - Riduco la numerosità dell'esercito sconfitto. Se raggiunge zero, l'esercito è distrutto.
+				if (attk.numeros+result) <= 0 then delete from esercito where nomeesercito=attk.nomeesercito;
+				else update esercito set numeros = numeros+result where nomeesercito=attk.nomeesercito; end if;--IF4END
+				--Aggiorno il num. di vittorie degli eserciti
+				update esercito set vittorie=vittorie-1, mosso='t' where nomeesercito=attk.nomeesercito;
+				update esercito set vittorie=vittorie+1 where nomeesercito=defs.nomeesercito;
+			end if;--IF2END
+		end if;--IF1END
+		return result;
+	end;
+$$ language plpgsql;

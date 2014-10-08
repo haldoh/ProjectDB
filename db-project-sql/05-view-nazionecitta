@@ -1,0 +1,5 @@
+--vista sulle città della nazione
+create or replace view nazionecitta (nazione, ab, citta, picitta) as
+select nazione.nomen, sum(ab), count(*), sum(vi) from nazione, citta where nazione.nomen=citta.nazione
+group by nazione.nomen;
+		

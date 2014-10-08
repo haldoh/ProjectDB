@@ -1,0 +1,5 @@
+--vista sugli eserciti della nazione		
+create or replace view nazioneeser (nazione, eserciti, pieser) as
+select nazione.nomen, count(*), sum(esercito.pi) from nazione left join esercito on nazione.nomen=esercito.nazione
+group by nazione.nomen;
+

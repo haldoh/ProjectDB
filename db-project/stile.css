@@ -1,0 +1,11 @@
+table {background: #66aacc; border-width:1px; border-style:solid; border-collapse:collapse;}
+td {border-style: solid; border-width:1px;}
+th {border-style: solid; border-width:1px;}
+body {background: #eeeeee;}
+p {font: 15px Verdana; color:black;}
+b {font: 16px Verdana; color:black;}
+h3 {font: 22px Verdana; color:black; font-weight:bold;}
+h5 {font: 15px Verdana; color:black; font-weight:bold;}
+th {font: 17px Verdana; color:black;}
+a {font: 14px Verdana; color:#991100;}
+th p {font: 15px Verdana; font-weight: bold;}

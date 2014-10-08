@@ -1,0 +1,60 @@
+--crea la tabella di routing dopo la creazione di una nuova strada
+create or replace function route () returns trigger as $$
+	declare
+		city varchar(40);
+		trow record;
+		introw record;
+		introw2 record;
+	begin
+		delete from cityroute;		
+		--LOOP1 - Seleziona la città da cui iniziare la costruzione della tabella di routing
+		for trow in select * from citta loop
+			city := trow.nomec;
+			update citta set hop=-1, final='f';
+			update citta set hop=0, final='t', passada=city
+			where nomec = city;
+			--LOOP2 - Marca le città adiacenti alla città iniziale
+			for introw in select * from strada where citta1 = city loop
+				update citta set hop=1, passada=city
+				where nomec = introw.citta2;
+			end loop;
+			-- LOOP2END
+
+			--LOOP3 - Seleziona una città già marcata ma non finalizzata, marca le città adiacenti e finalizza
+			<<loop3>>
+			loop
+			declare
+				curs cursor for select * from citta where hop > 0 and final = 'f';
+				trowdec citta%rowtype;
+			begin
+				open curs;
+				fetch curs into trowdec;
+				if not found then close curs; exit loop3; end if;				
+				--LOOP4 - Marca le città adiacenti alla città attuale				
+				for introw2 in select * from strada where citta1 = trowdec.nomec loop
+					update citta set hop = trowdec.hop+1, passada=trowdec.nomec
+					where nomec = introw2.citta2 and final ='f' and hop > (trowdec.hop+1);				
+				end loop;
+				--LOOP4END
+
+				update citta set final = 't'
+				where nomec = trowdec.nomec;
+				close curs;
+			end;			
+			end loop loop3;
+			--LOOP3END
+
+			--LOOP5 - Copia nella tab di routing le info riguardo le città raggiungibili da city
+			for introw in select * from citta where hop > 0 loop
+				insert into cityroute values(introw.nomec,city,introw.passada,introw.hop);
+			end loop;
+			--LOOP5END
+
+		end loop;
+		--LOOP1END
+		
+	return new;	
+	end;
+$$ language plpgsql;
+
+create trigger troute after insert or delete on strada for each statement execute procedure route();

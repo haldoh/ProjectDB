@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<title><title>
+	<head>
+		<?php $nome=$_POST['name'];
+		$passwd=$_POST['passwd'];
+		$passwd2=$_POST['passwd2'];
+		?>	
+	</head>
+	<body>
+		<?php
+		if($passwd != $passwd2) {
+			echo ('<script>
+				<!--
+				location.replace("http://localhost/db-project/register.php?err=1");
+				-->
+				</script>');
+		} else {
+			$db = pg_connect("host=localhost user=project password=password dbname=dbproject");
+			$sql = "insert into giocatore values ('$nome', '$passwd');";
+			$resource=pg_query($db,$sql);
+			if($resource)
+				print 'Inserita '.pg_affected_rows($resource).' tupla.';
+			$sql="select * from giocatore where nomeg='$nome';";
+			$resource=pg_query($db,$sql);
+			if($resource) {
+				$row = pg_fetch_array($resource,NULL,PGSQL_ASSOC);
+				print_r ($row);
+			}
+		} 
+		?>
+	</body>
+</html>

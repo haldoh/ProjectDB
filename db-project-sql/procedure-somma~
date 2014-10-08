@@ -1,0 +1,16 @@
+create function somma() returns void as $$
+	declare
+		curs cursor for select * from somma;
+		trow somma%rowtype;	
+	begin
+		open curs;
+		loop
+		fetch curs into trow;
+		if not found then exit; end if;
+		update somma
+		set result = trow.a1+trow.a2
+		where a1=trow.a1 and a2=trow.a2;
+		end loop;
+		return;
+	end;
+$$ language plpgsql;

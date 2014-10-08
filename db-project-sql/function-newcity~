@@ -1,0 +1,11 @@
+Create or replace function newcity() returns trigger as $somma$
+	declare
+	begin
+		update nazione
+		set pi = pi - new.vi
+		where nomen = new.nazione;
+		return new;
+	end;
+$somma$ language plpgsql;
+
+create trigger tnewcity after insert on citta for each row execute procedure newcity();

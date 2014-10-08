@@ -1,0 +1,66 @@
+create table Giocatore (
+	nomeG 		varchar(40) primary key,
+	passwd		varchar(40),
+	tRegist		integer,
+	turno		boolean default FALSE
+);
+
+create table Nazione (
+	nomeN		varchar(40) unique,
+	giocatore		varchar(40) unique,
+	band		oid,
+	PI			integer default 700,
+	dab		integer default 0,
+	drn		integer default 0,
+	primary key	(nomeN, giocatore),
+	foreign key	(giocatore)
+		references Giocatore(nomeG) on update cascade on delete cascade
+);
+
+create table Citta (
+	nomeC		varchar(40) unique,
+	VI		integer default 200,
+	Ab		integer default 0,
+	Rn		integer,
+	Ra		integer,
+	Rl		integer,
+	nazione		varchar(40),
+	mod		boolean default FALSE,
+	hop 		integer default -1,
+	final 		boolean default 'f',
+	passada		varchar(40),
+	primary key	(nomeC, nazione),
+	foreign key	(nazione)
+		references Nazione(nomeN) on update cascade on delete cascade
+	foreign key	(passada)
+		references citta(nomeC) on update cascade on delete cascade
+);
+
+create table Esercito (
+	NomeEsercito	varchar(40) unique,
+	Numeros		int,
+	PI			int,
+	PM			int,
+	VA			int,
+	VD			int,
+	Vittorie		int,
+	Nazione		varchar(40),
+	Citta			varchar(40),
+	mosso		boolean default FALSE,
+	mod		boolean default false,
+	primary key	(NomeEsercito, Nazione, Citta),
+	foreign key	(Citta)
+		references Citta(NomeC) on update cascade on delete cascade,
+	foreign key	(Nazione)
+		references Nazione(NomeN) on update cascade on delete cascade
+);
+
+create table Strada (
+	Citta1		varchar(40),
+	Citta2		varchar(40),
+	primary key	(Citta1, Citta2),
+	foreign key	(Citta1)
+		references Citta(NomeC) on update cascade on delete cascade,
+	foreign key	(Citta2)
+		references Citta(NomeC) on update cascade on delete cascade
+);

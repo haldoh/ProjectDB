@@ -1,0 +1,43 @@
+--Operazioni automatiche dopo modifica esercito
+Create or replace function modarmy() returns trigger as $$
+	declare
+		dpi integer;
+		dnum integer;
+	begin
+		dpi := new.pi-old.pi;
+		dnum := new.numeros-old.numeros;
+		--se sono cambiati i pi investiti
+		if dpi <> 0 then
+		if old.mod = 't' then return new; end if;
+		update esercito set mod='t' where nomeesercito=new.nomeesercito;
+			if dpi > 0 then
+				--se sono aumentati i pi investiti
+				update esercito
+				set va = va+((dpi/3)*(new.vittorie+1)), vd = old.vd+((dpi/3)*(new.vittorie+1)), pm = old.pm+((dpi/3)*(1/new.numeros))
+				where nomeesercito=new.nomeesercito;
+				update nazione
+				set pi = pi-dpi, dab = dab+dpi, drn = drn-(dpi/10)
+				where nomen = new.nazione;
+			else
+				--se sono diminuiti i pi investiti
+				update nazione
+				set pi = pi-dpi
+				where nomen = new.nazione;
+			end if;
+		else
+			if dnum <> 0 then
+				if old.mod = 't' then return new; end if;
+				update esercito set mod='t' where nomeesercito=new.nomeesercito;
+				--se è aumentata la numerosità
+				if dnum > 0 then
+					update citta
+					set ab = ab - dnum
+					where nomec = new.citta;
+				end if;
+			end if;
+		end if;
+		return new;
+	end;
+$$ language plpgsql;
+
+create trigger tmodarmy after update on esercito for each row execute procedure modarmy();

@@ -1,0 +1,11 @@
+create table cityroute (
+partenza	varchar(40),
+arrivo		varchar(40), 
+passada		varchar(40),
+hop		integer default 0,
+primary key (partenza, arrivo),
+foreign key (partenza) references citta(nomec) on update cascade on delete cascade,
+foreign key (arrivo) references citta(nomec) on update cascade on delete cascade,
+foreign key (passada) references citta(nomec) on update cascade on delete cascade
+);
+

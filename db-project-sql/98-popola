@@ -1,0 +1,54 @@
+--Crea Giocatori
+insert into giocatore values('player1', 'passwd', 1);
+insert into giocatore values('player2', 'passwd', 2);
+insert into giocatore values('player3', 'passwd', 3);
+insert into giocatore values('player4', 'passwd', 4);
+insert into giocatore values('player5', 'passwd', 5);
+insert into giocatore values('player6', 'passwd', 6);
+
+--Crea Nazioni
+insert into nazione values('nazp1', 'player1', lo_import('/home/wolf/flag0.jpg'));
+insert into nazione values('nazp2', 'player2', lo_import('/home/wolf/flag1.jpg'));
+insert into nazione values('nazp3', 'player3', lo_import('/home/wolf/flag2.jpg'));
+insert into nazione values('nazp4', 'player4', lo_import('/home/wolf/flag3.jpg'));
+insert into nazione values('nazp5', 'player5', lo_import('/home/wolf/flag4.gif'));
+insert into nazione values('nazp6', 'player6', lo_import('/home/wolf/flag5.jpg'));
+
+--Crea Città
+insert into citta values('citta1p1', 225, 123, 75, 100, 50, 'nazp1');
+insert into citta values('citta2p1', 200, 46, 75, 75, 50, 'nazp1');
+insert into citta values('citta1p2', 203, 67, 74, 69, 50, 'nazp2');
+insert into citta values('citta2p2', 250, 110, 100, 100, 50, 'nazp2');
+insert into citta values('citta1p3', 250, 90, 100, 100, 50, 'nazp3');
+insert into citta values('citta2p3', 250, 79, 100, 100, 50, 'nazp3');
+insert into citta values('citta1p4', 250, 200, 100, 100, 50, 'nazp4');
+insert into citta values('citta2p4', 250, 35, 100, 100, 50, 'nazp4');
+insert into citta values('citta1p5', 250, 110, 100, 100, 50, 'nazp5');
+insert into citta values('citta2p5', 250, 83, 100, 100, 50, 'nazp5');
+insert into citta values('citta1p6', 250, 134, 100, 100, 50, 'nazp6');
+insert into citta values('citta2p6', 250, 65, 100, 100, 50, 'nazp6');
+
+--Crea Strade
+select newroad('Capital nazp1','citta1p1', 'nazp4');
+select newroad('Capital nazp2','citta1p2', 'nazp4');
+select newroad('Capital nazp3','citta2p3', 'nazp1');
+select newroad('Capital nazp4','citta1p4', 'nazp2');
+select newroad('Capital nazp5','citta2p5', 'nazp2');
+select newroad('Capital nazp6','citta1p6', 'nazp4');
+select newroad('citta1p1','citta1p2', 'nazp3');
+select newroad('citta1p2','citta1p3', 'nazp1');
+select newroad('citta1p3','citta2p4', 'nazp3');
+select newroad('citta2p4','citta1p4', 'nazp3');
+select newroad('citta1p3','citta2p5', 'nazp5');
+select newroad('citta1p6','citta1p4', 'nazp6');
+
+--Crea Eserciti
+insert into esercito values('army1p1', 50, 100, 20, 40, 40, 0, 'nazp1', 'Capital nazp1');
+insert into esercito values('army1p2', 50, 100, 20, 40, 40, 0, 'nazp2', 'Capital nazp2');
+insert into esercito values('army1p3', 50, 100, 20, 40, 40, 0, 'nazp3', 'Capital nazp3');
+insert into esercito values('army1p4', 50, 100, 20, 40, 40, 0, 'nazp4', 'Capital nazp4');
+insert into esercito values('army1p5', 50, 100, 20, 40, 40, 0, 'nazp5', 'Capital nazp5');
+insert into esercito values('army1p6', 50, 100, 20, 40, 40, 0, 'nazp6', 'Capital nazp6');
+
+--Imposto una situazione iniziale per le nazioni
+update nazione set pi=1000, dab=0, drn=0;

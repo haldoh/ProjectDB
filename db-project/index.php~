@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<title>db-project - index<title>
+	<head>
+	</head>
+	<body>
+		<h1>db-project - index</h1>
+		<h4>Home Page db-project</h4>
+		<?php
+			if($_SESSION['nome'] == NULL){
+				echo('<p><a href= register.php>Registra Nuovo Giocatore</a></p>');
+				echo('<p><a href= login.php>Accedi</a></p>');
+			} else {
+				print('Benvenuto in db-project '.$_SESSION['nome'].'!');
+				echo('<p><a href=createcity.php>Crea Nazione</a></p>');
+				echo('<p><a href=createcity.php>Crea Città</a></p>');
+				echo('<p><a href=logout.php>Logout</a></p>');
+			}
+		?>
+	</body>
+</html>

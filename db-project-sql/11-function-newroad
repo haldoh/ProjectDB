@@ -1,0 +1,23 @@
+--Crea una strada
+Create or replace function newroad(citta1 varchar(40), citta2 varchar(40), naz varchar(40)) returns void as $$
+	declare
+		curs1 cursor for select * from citta where nomec=citta1;
+		curs2 cursor for select * from citta where nomec=citta2;
+		trow1 citta%rowtype;
+		trow2 citta%rowtype;
+		ab1 integer;
+		ab2 integer;
+	begin
+		open curs1;
+		fetch curs1 into trow1;
+		ab1 := trow1.ab;
+		open curs2;
+		fetch curs2 into trow2;
+		ab2 := trow2.ab;
+		update nazione
+		set pi = pi - ((ab1+ab2)/3)
+		where nomen = naz;
+		insert into strada values(citta1, citta2),(citta2, citta1);
+		return;
+	end;
+$$ language plpgsql;

@@ -1,0 +1,2 @@
+grant all privileges on database dbproject to project;
+grant all privileges on nazione, giocatore, citta, strada, esercito, nazioneeser, nazionecitta, statnazioni, cityroute to project;

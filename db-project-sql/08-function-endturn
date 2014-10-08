@@ -1,0 +1,76 @@
+--Operazioni automatiche a fine turno
+Create or replace function endturn() returns trigger as $$
+	declare
+		--Trovo la nazione del giocatore
+		tab_cursor cursor for select * from nazione where giocatore=old.nomeg;
+		t_row nazione%rowtype;
+	begin
+		--IF1 - Se il turno passa da true a false
+		if old.turno = 't' and new.turno = 'f' then
+			open tab_cursor;
+			fetch tab_cursor into t_row;
+			--Calcolo e assegno pi alla nazione per incremento ab e rn
+			update nazione
+			set pi = pi+((dab+drn)/4)
+			where nomen=t_row.nomen;
+			--Resetto i campi drn e dab
+			update nazione
+			set dab=0, drn=0
+			where nomen=t_row.nomen;
+			--Resetto tutti i campi mod nelle città
+			update citta
+			set mod = 'f'
+			where nazione=t_row.nomen;
+			--Resetto tutti i campi mod e mosso negli eserciti
+			update esercito
+			set mod = 'f', mosso='f'
+			where nazione=t_row.nomen;
+			close tab_cursor;
+			--Trovo il prossimo giocatore
+				declare
+					--Calcolo chi è il prossimo giocatore di turno
+					tab_cursor_turn cursor for 	select * 
+											from giocatore join nazione on nomeg=giocatore
+											where tregist =	(select min(tregist)
+															from(select nomeg, tregist
+																from giocatore
+																where tregist > old.tregist) as player);
+					--Calcolo il primo giocatore ad essersi iscritto					
+					t_row_turn record;
+					tab_cursor_first cursor for	select * 
+											from giocatore join nazione on nomeg=giocatore
+											where tregist =	(select min(tregist)
+															from giocatore);
+					
+				begin
+					open tab_cursor_turn;
+					fetch tab_cursor_turn into t_row_turn;
+					close tab_cursor_turn;
+					--IF2 - Se esiste un giocatore dopo quello attuale in ordine cronologico tocca a lui, altrimenti tocca al primo giocatore					
+					if t_row_turn is not NULL then
+						update giocatore
+						set turno='t'
+						where nomeg = t_row_turn.nomeg;
+						--IF3 - Controllo se il giocatore è sospeso dal gioco
+						if t_row_turn.pi < -2000 then
+							update giocatore set turno='f' where nomeg = t_row_turn.nomeg; end if;--IF3END
+					else
+						open tab_cursor_first;
+						fetch tab_cursor_first into t_row_turn;
+						close tab_cursor_first;
+						update giocatore
+						set turno='t'
+						where nomeg = t_row_turn.nomeg;
+						--IF4 - Controllo se il giocatore è sospeso dal gioco
+						if t_row_turn.pi < -2000 then
+							update giocatore set turno='f' where nomeg = t_row_turn.nomeg; end if;--IF4END
+					end if;--IF2END
+				end;
+			
+		end if;--IF1END
+		return new;
+	end;
+$$ language plpgsql;
+
+create trigger tendturn after update on giocatore for each row execute procedure endturn();
+

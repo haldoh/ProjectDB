@@ -1,0 +1,15 @@
+--Aggiorna i pi della nazione e gli abitanti della città quando si crea un nuovo esercito
+Create or replace function newarmy() returns trigger as $$
+	declare
+	begin
+		update nazione
+		set pi = pi - new.pi, dab = dab - new.numeros
+		where nomen = new.nazione;
+		update citta
+		set ab = ab - new.numeros
+		where nomec = new.citta;
+		return new;
+	end;
+$$ language plpgsql;
+
+create trigger tnewarmy after insert on esercito for each row execute procedure newarmy();

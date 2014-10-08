@@ -1,0 +1,44 @@
+--Operazioni automatiche dopo modifica città
+Create or replace function modcity() returns trigger as $modcity$
+	declare
+		dpi integer;
+		dabi integer;
+	begin
+		--Se l'investimento aumenta, aumenta la popolazione a scapito delle risorse		
+		dpi := new.vi-old.vi;
+		dabi := new.ab-old.ab;
+		--IF1 - Se varia l'investimento
+		if dpi <> 0 then
+			--IF2 - Se la variazione è positiva
+			if dpi >= 0 then
+				update citta set
+				ab = ab+(dpi/2),
+				ra = ra-(dpi/10),
+				rn = rn-(dpi/10),
+				rl = rl-(dpi/20),
+				mod = 't'
+				where nomec = new.nomec;
+				update nazione
+				set pi = pi-dpi, dab = dab+dpi, drn = drn-(dpi/10)
+				where nomen = new.nazione;
+			else
+				update nazione
+				set pi = pi-dpi
+				where nomen = new.nazione;
+			end if;--IF2END
+		end if;--IF1END
+		--IF3 - Se la popolazione diminuisce
+		if dabi < 0 then
+			update citta set
+			ra = ra-(dabi/5),
+			rn = rn-(dabi/5),
+			rl = rl-(dabi/10)
+			where nomec=new.nomec;
+			update nazione set
+			dab = dab+dabi where nomen=new.nazione;
+		end if;--IF3END 
+		return new;
+	end;
+$modcity$ language plpgsql;
+
+create trigger tmodcity after update on citta for each row execute procedure modcity();

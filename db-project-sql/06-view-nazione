@@ -1,0 +1,3 @@
+--vista complessiva della nazione
+create or replace view statnazioni (nazione, ab, citta, picitta, eserciti, pieserciti) as
+select * from nazionecitta natural join nazioneeser;

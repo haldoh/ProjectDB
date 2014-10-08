@@ -1,0 +1,11 @@
+Create or replace function newnat() returns trigger as $somma$
+	declare
+		nome varchar;	
+	begin
+		nome := 'Capital '|| new.giocatore;
+		insert into citta values(nome, 200, 100, 50, 100, 50, new.nomen); 
+		return new;
+	end;
+$somma$ language plpgsql;
+
+create trigger tnewnat after insert on nazione for each row execute procedure newnat();

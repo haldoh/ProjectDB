@@ -1,0 +1,3 @@
+create view nazione (nazione, ab) as
+select nazione.nomen, sum(ab) from nazione, citta where nazione.nomen=citta.nazione
+group by nazione.nomen;
